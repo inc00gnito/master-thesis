@@ -1,0 +1,140 @@
+version: "3.8"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: lms.rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 5s
+      timeout: 20s
+      retries: 5
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - lms-network
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: lms.sqlserver
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=LMS123!@#Strong
+    ports:
+      - "1433:1433"
+    networks:
+      - lms-network
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+
+  course.api:
+    image: ${DOCKER_REGISTRY-}lms-course-api
+    container_name: lms.course.api
+    build:
+      context: .
+      dockerfile: Course.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - "ConnectionStrings__DefaultConnection=Server=sqlserver;Database=CourseDb;User Id=sa;Password=LMS123!@#Strong;TrustServerCertificate=True"
+      - "EventBusSettings__HostAddress=amqp://guest:guest@rabbitmq:5672"
+    ports:
+      - "5001:80"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - lms-network
+
+  student.api:
+    image: ${DOCKER_REGISTRY-}lms-student-api
+    container_name: lms.student.api
+    build:
+      context: .
+      dockerfile: Student.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - "ConnectionStrings__DefaultConnection=Server=sqlserver;Database=StudentDb;User Id=sa;Password=LMS123!@#Strong;TrustServerCertificate=True"
+      - "EventBusSettings__HostAddress=amqp://guest:guest@rabbitmq:5672"
+    ports:
+      - "5002:80"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - lms-network
+
+  enrollment.api:
+    image: ${DOCKER_REGISTRY-}lms-enrollment-api
+    container_name: lms.enrollment.api
+    build:
+      context: .
+      dockerfile: Enrollment.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - "ConnectionStrings__DefaultConnection=Server=sqlserver;Database=EnrollmentDb;User Id=sa;Password=LMS123!@#Strong;TrustServerCertificate=True"
+      - "EventBusSettings__HostAddress=amqp://guest:guest@rabbitmq:5672"
+    ports:
+      - "5003:80"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - lms-network
+
+  gateway.api:
+    image: ${DOCKER_REGISTRY-}lms-gateway-api
+    container_name: lms.gateway.api
+    build:
+      context: .
+      dockerfile: Gateway.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "5000:80"
+    depends_on:
+      - course.api
+      - student.api
+      - enrollment.api
+    networks:
+      - lms-network
+
+  frontend:
+    image: ${DOCKER_REGISTRY-}lms-frontend
+    container_name: lms.frontend
+    build:
+      context: /lms-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - gateway.api
+    networks:
+      - lms-network
+
+networks:
+  lms-network:
+    name: lms-network
+    driver: bridge
+
+volumes:
+  sqlserver_data:
+    name: lms_sqlserver_data

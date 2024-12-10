@@ -1,0 +1,43 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "course.api",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/course-api/{everything}",
+      "UpstreamHttpMethod": ["Get", "Post", "Put", "Delete"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "student.api",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/student-api/{everything}",
+      "UpstreamHttpMethod": ["Get", "Post", "Put", "Delete"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "enrollment.api",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/enrollment-api/{everything}",
+      "UpstreamHttpMethod": ["Get", "Post", "Put", "Delete"]
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://gateway.api"
+  }
+}
