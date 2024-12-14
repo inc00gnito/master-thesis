@@ -1,15 +1,15 @@
 ```mermaid
 graph TB
-Client[Frontend Vue.js Application]
+Client[UI]
 
-    subgraph "Monolithic Backend"
+    subgraph "LMS Backend"
         API[API Layer]
         AppLayer[Application Layer]
         Domain[Domain Layer]
         DataLayer[Infrastructure Layer]
     end
 
-    Database[(Single Database)]
+    Database[(SQLServer)]
 
     Client --> API
     API --> AppLayer
@@ -17,7 +17,7 @@ Client[Frontend Vue.js Application]
     AppLayer --> DataLayer
     DataLayer --> Database
 
-    subgraph "Application Services"
+    subgraph "Serwisy"
         CourseService[Course Service]
         StudentService[Student Service]
         EnrollmentService[Enrollment Service]
