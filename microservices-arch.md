@@ -2,7 +2,7 @@ Architecture:
 
 ```mermaid
 graph TB
-    Client[Frontend Vue.js Application]
+    Client[UI]
     Gateway[API Gateway]
     RabbitMQ[RabbitMQ Message Bus]
 
