@@ -32,24 +32,24 @@ Data Flow (enrollment process)
 
 ```mermaid
 sequenceDiagram
-    participant Client
+    participant UI
     participant API
-    participant EnrollmentService
-    participant CourseService
-    participant StudentService
-    participant Database
+    participant SerwisZapisow
+    participant SerwisKursow
+    participant SerwisStudentow
+    participant BazaDanych
 
-    Client->>API: Create Enrollment Request
-    API->>EnrollmentService: Process Enrollment
-    EnrollmentService->>CourseService: Check Prerequisites
-    CourseService-->>EnrollmentService: Prerequisites Status
-    EnrollmentService->>StudentService: Verify Student
-    StudentService-->>EnrollmentService: Student Status
-    EnrollmentService->>Database: Create Enrollment
-    EnrollmentService->>CourseService: Update Course Capacity
-    CourseService->>Database: Update Course
-    EnrollmentService-->>API: Enrollment Created
-    API-->>Client: Success Response
+    UI->>API: Żądanie utworzenia zapisu
+    API->>SerwisZapisow: Przetwarzanie zapisu
+    SerwisZapisow->>SerwisKursow: Sprawdzenie wymagań wstępnych
+    SerwisKursow-->>SerwisZapisow: Status wymagań wstępnych
+    SerwisZapisow->>SerwisStudentow: Weryfikacja studenta
+    SerwisStudentow-->>SerwisZapisow: Status studenta
+    SerwisZapisow->>BazaDanych: Utworzenie zapisu
+    SerwisZapisow->>SerwisKursow: Aktualizacja dostępności kursu
+    SerwisKursow->>BazaDanych: Aktualizacja kursu
+    SerwisZapisow-->>API: Zapis utworzony
+    API-->>UI: Odpowiedź sukcesu
 ```
 
 Deployment arch
