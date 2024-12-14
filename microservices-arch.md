@@ -40,25 +40,25 @@ Data Flow (enrollment process)
 
 ```mermaid
 sequenceDiagram
-    participant Client
+    participant UI
     participant Gateway
     participant EnrollmentAPI
     participant CourseAPI
     participant StudentAPI
     participant RabbitMQ
 
-    Client->>Gateway: Create Enrollment Request
-    Gateway->>EnrollmentAPI: Forward Request
-    EnrollmentAPI->>CourseAPI: Check Prerequisites
-    CourseAPI-->>EnrollmentAPI: Prerequisites Status
-    EnrollmentAPI->>StudentAPI: Verify Student
-    StudentAPI-->>EnrollmentAPI: Student Status
-    EnrollmentAPI->>EnrollmentAPI: Create Enrollment
-    EnrollmentAPI->>RabbitMQ: Publish EnrollmentCreated
-    RabbitMQ->>CourseAPI: Update Course Capacity
-    RabbitMQ->>StudentAPI: Update Student Enrollments
-    EnrollmentAPI-->>Gateway: Enrollment Created
-    Gateway-->>Client: Success Response
+    UI->>Gateway: Żądanie utworzenia zapisu
+    Gateway->>EnrollmentAPI: Przekazanie żądania
+    EnrollmentAPI->>CourseAPI: Sprawdzenie wymagań wstępnych
+    CourseAPI-->>EnrollmentAPI: Status wymagań wstępnych
+    EnrollmentAPI->>StudentAPI: Weryfikacja studenta
+    StudentAPI-->>EnrollmentAPI: Status studenta
+    EnrollmentAPI->>EnrollmentAPI: Utworzenie zapisu
+    EnrollmentAPI->>RabbitMQ: Publikacja zdarzenia "EnrollmentCreated"
+    RabbitMQ->>CourseAPI: Aktualizacja dostępności kursu
+    RabbitMQ->>StudentAPI: Aktualizacja zapisów studenta
+    EnrollmentAPI-->>Gateway: Zapis utworzony
+    Gateway-->>UI: Odpowiedź sukcesu
 ```
 
 Deployment Arch:
