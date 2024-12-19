@@ -1,0 +1,5 @@
+Timestamp,Container,Name,CPU%,MemUsage,NetIO,BlockIO
+2024-12-14 16:45:32,lms.course.api,lms.course.api,0.01%,96.15MiB / 7.693GiB,26kB / 253kB,0B / 0B
+2024-12-14 16:45:32,lms.student.api,lms.student.api,0.02%,89.02MiB / 7.693GiB,23.8kB / 204kB,0B / 0B
+2024-12-14 16:45:32,lms.enrollment.api,lms.enrollment.api,0.02%,86.03MiB / 7.693GiB,22.7kB / 201kB,0B / 0B
+2024-12-14 16:45:32,lms.gateway.api,lms.gateway.api,0.00%,53.19MiB / 7.693GiB,10.7kB / 164kB,0B / 0B
