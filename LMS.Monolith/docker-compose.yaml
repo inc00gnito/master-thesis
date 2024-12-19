@@ -1,0 +1,87 @@
+version: "3.8"
+
+services:
+  # Frontend
+  frontend-monolith:
+    image: ${DOCKER_REGISTRY:-}lms-frontend
+    container_name: lms.frontend
+    build:
+      context: ./lms-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5174:80"
+    depends_on:
+      - lms-monolith
+    networks:
+      - lms-monolith-network
+
+  # Database
+  sqlserver-monolith:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: lms.sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=LMS123!@#Strong
+    ports:
+      - "1433:1433"
+    networks:
+      - lms-monolith-network
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+
+  # Monolithic API
+  lms-monolith:
+    image: ${DOCKER_REGISTRY:-}lms-api
+    container_name: lms.monolith
+    build:
+      context: .
+      dockerfile: LMS.Monolith/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver-monolith;Database=LmsDb;User Id=sa;Password=LMS123!@#Strong;TrustServerCertificate=True
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "5110:80"
+    depends_on:
+      - sqlserver-monolith
+    networks:
+      - lms-monolith-network
+
+  # # Monitoring
+  # prometheus-monolith:
+  #   image: prom/prometheus
+  #   container_name: prometheus
+  #   ports:
+  #     - "9090:9090" # Corrected port for Prometheus
+  #   volumes:
+  #     - ./prometheus:/etc/prometheus
+  #     - prometheus_data:/prometheus
+  #   command:
+  #     - "--config.file=/etc/prometheus/prometheus.yml"
+  #   networks:
+  #     - lms-monolith-network
+
+  # grafana-monolith:
+  #   image: grafana/grafana
+  #   container_name: grafana
+  #   ports:
+  #     - "3000:3000" # Corrected port for Grafana
+  #   volumes:
+  #     - grafana_data:/var/lib/grafana
+  #   depends_on:
+  #     - prometheus-monolith
+  #   networks:
+  #     - lms-monolith-network
+
+networks:
+  lms-monolith-network:
+    name: lms-monolith-network
+    driver: bridge
+
+volumes:
+  sqlserver_data:
+    name: lms_sqlserver_data
+  # prometheus_data:
+  #   name: lms_prometheus_data
+  # grafana_data:
+  #   name: lms_grafana_data

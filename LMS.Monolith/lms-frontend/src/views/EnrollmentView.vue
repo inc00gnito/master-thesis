@@ -331,7 +331,7 @@ onMounted(fetchData)
 
 .stat-card {
   padding: 16px;
-  background: white;
+  background: #919191;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -351,7 +351,7 @@ onMounted(fetchData)
 }
 
 .table-container {
-  background: white;
+  background: #919191;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -366,7 +366,7 @@ onMounted(fetchData)
 .data-table td {
   padding: 12px;
   text-align: left;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #d1d1d1;
 }
 
 .status-badge {
@@ -392,7 +392,7 @@ onMounted(fetchData)
 
 .status-badge.completed {
   background-color: #2196f3;
-  color: white;
+  color: #d1d1d1;
 }
 
 .modal {
@@ -408,7 +408,7 @@ onMounted(fetchData)
 }
 
 .modal-content {
-  background: white;
+  background: #d1d1d1;
   padding: 24px;
   border-radius: 8px;
   min-width: 400px;
